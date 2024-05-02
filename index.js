@@ -3,6 +3,8 @@ const path = require("path");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv").config();
 const bodyParser = require("body-parser");
+const session = require("express-session");
+const flash = require("connect-flash");
 
 const config = require("./config/db");
 
@@ -26,8 +28,18 @@ app.set("view engine", "ejs");
 app.use("/views", express.static(path.join(__dirname, "views")));
 app.use("/public", express.static(path.join(__dirname, "public")));
 
+app.use(
+  session({
+    secret: "sessionSecret",
+    resave: true,
+    saveUninitialized: true,
+    cookie: { maxAge: 60 * 1000 * 60, secure: false },
+  })
+);
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(flash());
 
 app.use("/", userRouter);
 
