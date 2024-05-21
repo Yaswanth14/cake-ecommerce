@@ -13,6 +13,7 @@ const port = process.env.PORT || 3000;
 const db = process.env.MONGO_URL;
 
 const userRouter = require("./routes/user-router");
+const adminRouter = require("./routes/admin-router");
 
 mongoose
   .connect(config.database)
@@ -27,6 +28,7 @@ app.set("view engine", "ejs");
 
 app.use("/views", express.static(path.join(__dirname, "views")));
 app.use("/public", express.static(path.join(__dirname, "public")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(
   session({
@@ -42,6 +44,7 @@ app.use(bodyParser.json());
 app.use(flash());
 
 app.use("/", userRouter);
+app.use("/admin", adminRouter);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

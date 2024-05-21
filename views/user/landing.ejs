@@ -1,5 +1,28 @@
 <%- include('../layout/header') %>
 
-<div>This is a landing page</div>
+<% if (user) { %>
+    <div>Welcome <%= user.name %>!!</div>
+  <% } %>
+
+<% if (products && products.length > 0) { %>
+  <h2>Our Products</h2>
+  <div class="row row-cols-1 row-cols-md-4 g-4">  <% for (const product of products) { %>
+      <div class="col">
+        <div class="card">
+          <img src="uploads/<%= product.image %>" class="card-img-top" alt="<%= product.title %>">
+          <div class="card-body">
+            <h5 class="card-title" style="font-size: 20px;"><%= product.title %></h5>  
+            <p class="card-text" style="font-size: 14px;"><%= product.description.substring(0, 50) + '...' %></p> 
+            <p class="card-text" style="font-size: 16px;">₹<%= product.price %></p>
+            <a href="#" class="btn btn-dark">View Details</a>
+            <a href="#" class="btn btn-dark">Add to cart</a>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+<% } else { %>
+  <p>No products found.</p>
+<% } %>
 
 <%- include('../layout/footer') %>

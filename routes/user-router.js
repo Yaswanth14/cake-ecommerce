@@ -1,6 +1,7 @@
 const express = require("express");
 const userRouter = express.Router();
 const User = require("../models/userModel");
+const Product = require("../models/productModel");
 const bcrypt = require("bcrypt");
 
 const securePassword = async (password) => {
@@ -9,11 +10,11 @@ const securePassword = async (password) => {
 };
 
 userRouter.get("/", async (req, res) => {
-  res.render("user/home");
+  res.render("user/home", { user: 0 });
 });
 
 userRouter.get("/register", async (req, res) => {
-  res.render("user/register");
+  res.render("user/register", { user: 0 });
 });
 
 userRouter.post("/register", async (req, res) => {
@@ -35,7 +36,7 @@ userRouter.post("/register", async (req, res) => {
 });
 
 userRouter.get("/login", async (req, res) => {
-  res.render("user/login");
+  res.render("user/login", { user: 0 });
 });
 
 userRouter.post("/login", async (req, res) => {
@@ -55,14 +56,19 @@ userRouter.post("/login", async (req, res) => {
   }
 
   req.session.user = userData;
+  if (userData.isAdmin) {
+    res.render("admin/add-product", { user: 0 });
+  }
 
   res.redirect("/landing");
 });
 
 userRouter.get("/landing", async (req, res) => {
   const user = req.session.user;
+  const productsCollection = await Product.find({});
+  const products = [...productsCollection];
 
-  res.render("user/landing", { user });
+  res.render("user/landing", { user, products });
 });
 
 module.exports = userRouter;

@@ -1,0 +1,42 @@
+<%- include('../layout/header') %>
+
+<div class="mt-5">
+  <h1>Add Product</h1>
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="card">
+        <div class="card-body">
+          <form action="../admin/add-product" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="title">Title</label>
+              <input type="text" class="form-control" name="title" required />
+            </div>
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select class="form-control" name="category" required>
+                <option value="egg">Egg</option>
+                <option value="eggless">Eggless</option>
+                <option value="vegan">Vegan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="image">Image</label>
+              <input type="file" class="form-control-file" name="image" required />
+            </div>
+            <div class="form-group form-group-textarea">
+              <label for="description">Description</label>
+              <textarea class="form-control" name="description" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="price">Price</label>
+              <input type="number" class="form-control" name="price" step=".01" required />
+            </div>
+            <button type="submit" class="btn btn-dark">Add Product</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layout/footer') %>
