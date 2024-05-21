@@ -15,7 +15,7 @@
             <p class="card-text" style="font-size: 14px;"><%= product.description.substring(0, 50) + '...' %></p> 
             <p class="card-text" style="font-size: 16px;">₹<%= product.price %></p>
             <a href="#" class="btn btn-dark">View Details</a>
-            <a href="#" class="btn btn-dark">Add to cart</a>
+            <a href="#" class="btn btn-dark" onclick="addToCart('<%= product._id %>')"">Add to cart</a>
           </div>
         </div>
       </div>

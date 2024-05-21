@@ -2,6 +2,7 @@ const express = require("express");
 const userRouter = express.Router();
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
+const Cart = require("../models/cartModel");
 const bcrypt = require("bcrypt");
 
 const securePassword = async (password) => {
@@ -69,6 +70,52 @@ userRouter.get("/landing", async (req, res) => {
   const products = [...productsCollection];
 
   res.render("user/landing", { user, products });
+});
+
+userRouter.get("/details", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send("Please login to view cart");
+  }
+
+  try {
+    const user = req.session.user;
+
+    // Find user's cart
+    const cart = await Cart.findOne({ userId: user._id }).populate(
+      "cart.product"
+    );
+
+    if (cart) {
+      const total = cart.cart.reduce(
+        (acc, item) => acc + item.product.price,
+        0
+      );
+      res.render("user/cart", { cart: cart.cart, total, user });
+    } else {
+      res.render("user/cart", { cart: [], total: 0, user });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching cart details");
+  }
+});
+
+userRouter.post("/place-order", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send("Please login to place order");
+  }
+
+  try {
+    const user = req.session.user;
+
+    // Find user's cart
+    const cart = await Cart.deleteOne({ userId: user._id });
+    // res.status(200).send("Order placed successfully!");
+    res.redirect("landing");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error placing the order");
+  }
 });
 
 module.exports = userRouter;

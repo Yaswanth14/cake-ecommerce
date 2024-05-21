@@ -12,8 +12,13 @@ const app = express();
 const port = process.env.PORT || 3000;
 const db = process.env.MONGO_URL;
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/views", express.static(path.join(__dirname, "views")));
+app.use("/public", express.static(path.join(__dirname, "public")));
+
 const userRouter = require("./routes/user-router");
 const adminRouter = require("./routes/admin-router");
+const cartRouter = require("./routes/cart-router");
 
 mongoose
   .connect(config.database)
@@ -25,10 +30,6 @@ mongoose
   });
 
 app.set("view engine", "ejs");
-
-app.use("/views", express.static(path.join(__dirname, "views")));
-app.use("/public", express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(
   session({
@@ -45,6 +46,7 @@ app.use(flash());
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
+app.use("/cart", cartRouter);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
