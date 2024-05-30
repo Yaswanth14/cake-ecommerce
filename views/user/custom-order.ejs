@@ -1,0 +1,32 @@
+<%- include('../layout/header') %>
+
+<h2>Place a Custom Cake Order</h2>
+<form action="/custom-order" method="POST">
+  <div class="mb-3">
+    <label for="flavour" class="form-label">Flavour</label>
+    <input type="text" class="form-control" id="flavour" name="flavour" required>
+  </div>
+  <div class="mb-3">
+    <label for="theme" class="form-label">Theme</label>
+    <input type="text" class="form-control" id="theme" name="theme" required>
+  </div>
+  <div class="mb-3">
+    <label for="weight" class="form-label">Weight (kg)</label>
+    <input type="number" step="0.1" class="form-control" id="weight" name="weight" required>
+  </div>
+  <div class="mb-3">
+    <label for="toppings" class="form-label">Toppings</label>
+    <input type="text" class="form-control" id="toppings" name="toppings" required>
+  </div>
+  <div class="mb-3">
+    <label for="category" class="form-label">Category</label>
+    <select class="form-select" id="category" name="category" required>
+      <option value="egg">Egg</option>
+      <option value="eggless">Eggless</option>
+      <option value="vegan">Vegan</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Place Order</button>
+</form>
+
+<%- include('../layout/footer') %>

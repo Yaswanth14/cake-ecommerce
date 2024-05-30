@@ -4,6 +4,7 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 const Order = require("../models/ordersModel");
+const CustomOrder = require("../models/cakeModel");
 const bcrypt = require("bcrypt");
 
 const securePassword = async (password) => {
@@ -174,5 +175,41 @@ userRouter.post("/place-order", async (req, res) => {
     res.status(500).send("Error placing the order");
   }
 });
+
+userRouter
+  .route("/custom-order")
+  .get((req, res) => {
+    if (!req.session.user) {
+      return res.status(401).send("Please login to place a custom order");
+    }
+
+    res.render("user/custom-order", { user: req.session.user });
+  })
+  .post(async (req, res) => {
+    if (!req.session.user) {
+      return res.status(401).send("Please login to place a custom order");
+    }
+
+    try {
+      const { flavour, theme, weight, toppings, category } = req.body;
+      const user = req.session.user;
+
+      const customOrder = new CustomOrder({
+        userId: user._id,
+        flavour,
+        theme,
+        weight,
+        toppings,
+        category,
+        orderDate: new Date(),
+      });
+
+      await customOrder.save();
+      res.redirect("/landing");
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Error placing the custom order");
+    }
+  });
 
 module.exports = userRouter;
