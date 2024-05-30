@@ -3,6 +3,7 @@ const userRouter = express.Router();
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
+const Order = require("../models/ordersModel");
 const bcrypt = require("bcrypt");
 
 const securePassword = async (password) => {
@@ -40,6 +41,14 @@ userRouter.get("/login", async (req, res) => {
   res.render("user/login", { user: 0 });
 });
 
+userRouter.get("/landing", async (req, res) => {
+  const user = req.session.user;
+  const productsCollection = await Product.find({});
+  const products = [...productsCollection];
+
+  res.render("user/landing", { user, products });
+});
+
 userRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const userData = await User.findOne({ email });
@@ -57,19 +66,9 @@ userRouter.post("/login", async (req, res) => {
   }
 
   req.session.user = userData;
-  if (userData.isAdmin) {
+  if (userData.name == "admin") {
     res.render("admin/add-product", { user: 0 });
-  }
-
-  res.redirect("/landing");
-});
-
-userRouter.get("/landing", async (req, res) => {
-  const user = req.session.user;
-  const productsCollection = await Product.find({});
-  const products = [...productsCollection];
-
-  res.render("user/landing", { user, products });
+  } else res.redirect("/landing");
 });
 
 userRouter.get("/details", async (req, res) => {
@@ -100,6 +99,39 @@ userRouter.get("/details", async (req, res) => {
   }
 });
 
+userRouter.get("/orders", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send("Please login to view orders");
+  }
+
+  try {
+    const user = req.session.user;
+
+    // Find user's orders
+    const orders = await Order.find({ userId: user._id }).populate(
+      "order.product"
+    );
+
+    if (orders && orders.length > 0) {
+      // Calculate total for each order
+      const ordersWithTotal = orders.map((order) => {
+        const total = order.order.reduce(
+          (acc, item) => acc + item.product.price,
+          0
+        );
+        return { orderItems: order.order, total, orderDate: order.orderDate };
+      });
+
+      res.render("user/orders", { orders: ordersWithTotal, user });
+    } else {
+      res.render("user/orders", { orders: [], user });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching order details");
+  }
+});
+
 userRouter.post("/place-order", async (req, res) => {
   if (!req.session.user) {
     return res.status(401).send("Please login to place order");
@@ -109,9 +141,34 @@ userRouter.post("/place-order", async (req, res) => {
     const user = req.session.user;
 
     // Find user's cart
-    const cart = await Cart.deleteOne({ userId: user._id });
-    // res.status(200).send("Order placed successfully!");
-    res.redirect("landing");
+    const cart = await Cart.findOne({ userId: user._id }).populate(
+      "cart.product"
+    );
+    if (!cart || cart.cart.length === 0) {
+      return res.status(400).send("Your cart is empty");
+    }
+
+    // Find existing order or create a new one
+    let order = await Order.findOne({ userId: user._id });
+
+    if (order) {
+      // Append items from cart to existing order
+      order.order = order.order.concat(cart.cart);
+    } else {
+      // Create a new order with the items from the cart
+      order = new Order({
+        userId: user._id,
+        order: cart.cart,
+      });
+    }
+
+    // Save the order to the database
+    await order.save();
+
+    // Delete the user's cart
+    await Cart.deleteOne({ userId: user._id });
+
+    res.redirect("orders");
   } catch (err) {
     console.error(err);
     res.status(500).send("Error placing the order");

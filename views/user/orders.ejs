@@ -1,0 +1,33 @@
+<%- include('../layout/header') %>
+
+<% if (orders && orders.length > 0) { %>
+    <h2>Your Orders</h2>
+    <% orders.forEach(order => { %>
+        <div class="order mb-4">
+            <p>Last order placed on <%= order.orderDate.toDateString() %></p>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% order.orderItems.forEach(item => { %>
+                        <tr>
+                            <td><%= item.product.title %></td>
+                            <td><%= item.product.description.substring(0, 30) + '...' %></td>
+                            <td>₹<%= item.product.price %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+            <a class="btn btn-primary" href="/landing">Back</a><p><b class="text-end">Total: ₹<%= order.total %></b></p>
+        </div>
+    <% }) %>
+<% } else { %>
+    <p>You have no orders.</p>
+<% } %>
+
+<%- include('../layout/footer') %>

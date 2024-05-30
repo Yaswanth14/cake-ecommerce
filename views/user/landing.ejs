@@ -9,7 +9,7 @@
   <div class="row row-cols-1 row-cols-md-4 g-4">  <% for (const product of products) { %>
       <div class="col">
         <div class="card">
-          <img src="uploads/<%= product.image %>" class="card-img-top" alt="<%= product.title %>">
+          <img src="uploads/<%= product.image %>" class="card-img-top w-100" alt="<%= product.title %>" style="height: 200px; object-fit: cover;">
           <div class="card-body">
             <h5 class="card-title" style="font-size: 20px;"><%= product.title %></h5>  
             <p class="card-text" style="font-size: 14px;"><%= product.description.substring(0, 50) + '...' %></p> 
