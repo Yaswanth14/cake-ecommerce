@@ -68,7 +68,7 @@ userRouter.post("/login", async (req, res) => {
 
   req.session.user = userData;
   if (userData.name == "admin") {
-    res.render("admin/add-product", { user: 0 });
+    res.render("admin/add-product", { user: userData });
   } else res.redirect("/landing");
 });
 
@@ -211,5 +211,27 @@ userRouter
       res.status(500).send("Error placing the custom order");
     }
   });
+
+userRouter.get("/special-orders", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).send("Please login to view special orders");
+  }
+
+  try {
+    const user = req.session.user;
+
+    // Find user's custom orders
+    const customOrders = await CustomOrder.find({});
+
+    if (customOrders && customOrders.length > 0) {
+      res.render("user/special-orders", { customOrders, user });
+    } else {
+      res.render("user/special-orders", { customOrders: [], user });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching special orders");
+  }
+});
 
 module.exports = userRouter;

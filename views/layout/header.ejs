@@ -32,6 +32,10 @@
         </ul>
         <% if (user) { %>
           <form class="d-flex">
+            <% if(user.name == "admin") { %>
+              <a class="btn btn-primary mx-1" href="/special-orders">Special Orders</a>
+            <% } %>
+
             <a class="btn btn-primary mx-1" href="/details">Cart</a>
             <a class="btn btn-danger mx-1" href="/">Logout</a>
           </form>

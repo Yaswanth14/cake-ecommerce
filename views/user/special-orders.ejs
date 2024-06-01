@@ -1,0 +1,36 @@
+<%- include('../layout/header') %>
+
+<h2>Your Special Orders</h2>
+<% if (customOrders && customOrders.length > 0) { %>
+  <div class="order-list">
+    <% customOrders.forEach(order => { %>
+      <div class="order mb-4">
+        <p style="font-size: medium;">Order placed on <%= order.orderDate.toDateString() %></p>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Flavour</th>
+              <th scope="col">Theme</th>
+              <th scope="col">Weight (kg)</th>
+              <th scope="col">Toppings</th>
+              <th scope="col">Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><%= order.flavour %></td>
+              <td><%= order.theme %></td>
+              <td><%= order.weight %></td>
+              <td><%= order.toppings %></td>
+              <td><%= order.category %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <% }) %>
+  </div>
+<% } else { %>
+  <p>You have no special orders.</p>
+<% } %>
+
+<%- include('../layout/footer') %>
